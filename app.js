@@ -42,6 +42,7 @@
         <a href="mailto:${esc(SITE.email)}">Email</a>
       </div>
     </div>`;
+  $("#footer").insertAdjacentHTML("beforeend", `<div class="wordmark" aria-hidden="true">${esc(SITE.brand.split(" ")[0])}</div>`);
   document.body.insertAdjacentHTML("beforeend", `
     <div class="fab">
       ${SITE.whatsapp ? `<a class="wa" href="https://wa.me/${SITE.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>` : ""}

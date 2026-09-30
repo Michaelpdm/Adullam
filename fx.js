@@ -27,11 +27,11 @@
       if (p.y < 0 || p.y > H) p.vy *= -1;
       const dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy);
       if (d < 140) { p.x += dx / d * 1.2; p.y += dy / d * 1.2; }
-      cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.283); cx.fillStyle = "rgba(180,160,255,.7)"; cx.fill();
+      cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.283); cx.fillStyle = "rgba(255,255,255,.4)"; cx.fill();
     }
     for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
       const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
-      if (d < 130) { cx.strokeStyle = `rgba(139,92,246,${(1 - d / 130) * .3})`; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(pts[i].x, pts[i].y); cx.lineTo(pts[j].x, pts[j].y); cx.stroke(); }
+      if (d < 130) { cx.strokeStyle = `rgba(255,255,255,${(1 - d / 130) * .09})`; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(pts[i].x, pts[i].y); cx.lineTo(pts[j].x, pts[j].y); cx.stroke(); }
     }
     if (!reduce && !document.hidden) raf = requestAnimationFrame(draw);
   }

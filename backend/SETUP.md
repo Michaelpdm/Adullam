@@ -14,3 +14,16 @@
 7. Paste that URL into `data.js` in the `sheetUrl` line, upload to GitHub, done.
 
 Changed the script later? Use Deploy → Manage deployments → pencil → Version: New version → Deploy.
+
+---
+
+# Level 2: the private admin page (/admin)
+
+1. In `backend/Code.gs`, change `ADMIN_PASSWORD = "CHANGE-ME"` to a long password of your own (at least 8 characters; a few random words is best). Admin stays switched off until you do.
+2. Open your Apps Script (sheet -> Extensions -> Apps Script), select everything, paste the new `Code.gs`, save.
+3. **Deploy -> Manage deployments -> pencil icon -> Version: New version -> Deploy.**
+   (Do NOT choose "New deployment" or your web app URL will change.)
+4. Upload `admin.html`, `admin.css`, `admin.js`, `vercel.json`, `build.js`, `robots.txt`, `data.js` to GitHub. Do NOT upload the `backend` folder: `Code.gs` contains your password. Only paste it into Google.
+5. Open `https://YOUR-SITE.vercel.app/admin` and sign in.
+
+Wrong password 10 times = locked for 15 minutes. The password lives only in your Google script, never on the website.
