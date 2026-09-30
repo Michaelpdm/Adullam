@@ -56,5 +56,5 @@ write("index.html", idx);
 
 // ---- sitemap + robots ----
 if (base) write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${["", ...pages].map(p => `  <url><loc>${base}/${p}</loc></url>`).join("\n")}\n</urlset>\n`);
-write("robots.txt", `User-agent: *\nAllow: /\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ""}`);
+write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /admin\n${base ? `Sitemap: ${base}/sitemap.xml\n` : ""}`);
 console.log("Built:", ["index.html", ...pages, "robots.txt", base ? "sitemap.xml" : "(sitemap skipped: set SITE.url in data.js)"].join(", "));
