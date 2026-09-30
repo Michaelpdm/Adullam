@@ -20,7 +20,8 @@
   const errText = m => ({
     "wrong-password": "Wrong password.",
     "locked": "Too many wrong tries. Locked for 15 minutes.",
-    "admin-not-configured": "Set ADMIN_PASSWORD in the Google script first (see backend/SETUP.md)."
+    "admin-not-configured": "Set ADMIN_PASSWORD in the Google script first (see backend/SETUP.md).",
+    "missing fields": "Your Google script is still the OLD version. Paste the new Code.gs into Apps Script, then Deploy > Manage deployments > pencil > New version > Deploy."
   }[m] || m);
 
   function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2200); }
@@ -36,6 +37,7 @@
       return true;
     } catch (e) {
       if (/password|locked|configured/.test(e.message)) { pw = ""; try { sessionStorage.removeItem("adm"); } catch (_) {} $("#login").hidden = false; $("#app").hidden = true; $("#lerr").textContent = errText(e.message); }
+      else if (!$("#login").hidden) { $("#lerr").textContent = "Couldn't sign in: " + errText(e.message); }
       else { $("#state").textContent = "Couldn't load: " + errText(e.message); }
       return false;
     }
