@@ -4,9 +4,12 @@
 const SITE = {
   brand: "Adullam Services",
   parent: "",     // shown in the footer ("by Adullam Ventures"); set "" to hide
-  instagram: "yourhandle",        // Instagram username, no @
-  email: "you@example.com",       // quote requests go here
+  instagram: "geniusworldofai",        // Instagram username, no @
+  email: "anthonymichael054@gmail.com",       // quote requests go here
   whatsapp: "",                   // optional, e.g. "2348012345678" (country code, no +)
+  sheetUrl: "https://script.google.com/macros/s/AKfycbzpsPc1R8Qn5MHqTlsOoX5FxRTz4wyxSaBZMRegY4_imd64qNivI4by7in94wHlrCc6_g/exec",                   // Google Apps Script web-app URL (see backend/SETUP.md): saves every request to your Google Sheet + emails you
+  formKey: "",                 // free key from web3forms.com (enter your email there); makes the quote form email you directly
+  url: "",                        // your live site address, e.g. "https://adullam-services.vercel.app" (used for link previews)
   tagline: "AI-powered content & software that actually converts"
 };
 
@@ -40,7 +43,7 @@ const SERVICES = {
     projects: []
   },
   web: {
-    icon: "🌐", name: "Web Development", badge: "",
+    icon: "🌐", name: "Web Development", badge: "MOST POPULAR",
     short: "Fast, modern, mobile-first websites and landing pages that turn visitors into customers.",
     long: "Custom websites and landing pages designed to look premium and convert, with SEO basics, fast hosting and mobile-first design.",
     features: ["Landing pages & business sites", "E-commerce & booking", "SEO-ready & mobile-first", "Hosted and live"],

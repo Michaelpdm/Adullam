@@ -17,7 +17,7 @@
       <div class="links" id="links">
         <div class="dd">
           <a href="${h("services")}" class="ddt">Services <span class="car">▾</span></a>
-          <div class="ddm">${Object.entries(SERVICES).map(([k, s]) => `<a href="service.html?s=${k}">${s.icon} ${esc(s.name)}</a>`).join("")}</div>
+          <div class="ddm">${Object.entries(SERVICES).map(([k, s]) => `<a href="${k}.html">${s.icon} ${esc(s.name)}</a>`).join("")}</div>
         </div>
         <a href="${h("process")}">Process</a>
         <a href="${h("work")}">Work</a>
@@ -37,7 +37,7 @@
     <div class="wrap">
       <div>© ${new Date().getFullYear()} ${esc(SITE.brand)}${SITE.parent ? " · by " + esc(SITE.parent) : ""}</div>
       <div class="fl">
-        ${Object.entries(SERVICES).map(([k, s]) => `<a href="service.html?s=${k}">${esc(s.name)}</a>`).join("")}
+        ${Object.entries(SERVICES).map(([k, s]) => `<a href="${k}.html">${esc(s.name)}</a>`).join("")}
         <a href="${IG}" target="_blank" rel="noopener">Instagram @${esc(SITE.instagram)}</a>
         <a href="mailto:${esc(SITE.email)}">Email</a>
       </div>
@@ -51,8 +51,8 @@
   /* ---------- mobile bottom action bar ---------- */
   document.body.insertAdjacentHTML("beforeend", `
     <div class="mbar">
-      <a class="btn primary" href="#" data-quote>Get a quote</a>
-      <a class="btn ghost" href="${IG_DM}" target="_blank" rel="noopener">📸 DM</a>
+      <a class="btn primary" href="${IG_DM}" target="_blank" rel="noopener">📸 DM me</a>
+      <a class="btn ghost" href="#" data-quote>Get a quote</a>
       ${SITE.whatsapp ? `<a class="btn ghost" href="https://wa.me/${SITE.whatsapp}" target="_blank" rel="noopener">💬</a>` : ""}
     </div>`);
 
@@ -63,7 +63,8 @@
         <button class="mx" aria-label="Close" data-close>×</button>
         <div id="qform">
           <h3>Start a project</h3>
-          <p class="msub">Tell me what you need and I'll reply with a quote and timeline.</p>
+          <p class="msub">Fastest reply is on Instagram. Or fill this in and I'll send a quote and timeline.</p>
+          <a class="btn primary" id="qig" href="${IG_DM}" target="_blank" rel="noopener" style="width:100%;margin-bottom:14px">📸 DM me on Instagram (fastest)</a>
           <form id="qf">
             <div class="row2">
               <label>Name<input name="name" required placeholder="Your name"></label>
@@ -76,9 +77,9 @@
               <label>Package<select name="pkg" id="qp"><option>Not sure yet</option></select></label>
             </div>
             <label>Project details<textarea name="msg" rows="4" required placeholder="What are you looking for? Links, niche, deadline…"></textarea></label>
+            <input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <button class="btn primary" style="justify-content:center" type="submit">Send request →</button>
             <div class="alt">
-              <a class="btn ghost sm" id="qig" href="${IG_DM}" target="_blank" rel="noopener">📸 DM on Instagram</a>
               ${SITE.whatsapp ? `<a class="btn ghost sm" id="qwa" href="#" target="_blank" rel="noopener">💬 WhatsApp</a>` : ""}
             </div>
           </form>
@@ -117,16 +118,42 @@
   document.addEventListener("keydown", e => { if (e.key === "Escape") { closeQuote(); closeLb(); } });
   $("#qig").addEventListener("click", () => { try { navigator.clipboard.writeText(messageText()); } catch (_) {} });
   if ($("#qwa")) $("#qwa").addEventListener("click", function () { this.href = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(messageText())}`; });
-  $("#qf").addEventListener("submit", e => {
+  $("#qf").addEventListener("submit", async e => {
     e.preventDefault();
-    const f = new FormData(e.target), body = messageText();
-    if (SITE.whatsapp) {
-      window.open(`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(body)}`, "_blank");
-      $("#qokmsg").textContent = "WhatsApp opened with your request ready to send. Just hit send.";
-    } else {
-      location.href = `mailto:${SITE.email}?subject=${encodeURIComponent("Project request: " + f.get("service"))}&body=${encodeURIComponent(body)}`;
+    const form = e.target, f = new FormData(form), body = messageText(), btn = $("button[type=submit]", form);
+    const done = msg => { $("#qokmsg").textContent = msg; $("#qform").style.display = "none"; $("#qok").style.display = "block"; form.reset(); fillPkgs(); };
+    // Fallback when no form key is set (or sending fails): WhatsApp if configured, otherwise the visitor's email app.
+    const fallback = () => {
+      if (SITE.whatsapp) {
+        window.open(`https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(body)}`, "_blank");
+        done("WhatsApp opened with your request ready to send. Just hit send.");
+      } else {
+        location.href = `mailto:${SITE.email}?subject=${encodeURIComponent("Project request: " + f.get("service"))}&body=${encodeURIComponent(body)}`;
+        done("Your email app should have opened with the request ready to send. Just hit send. Or DM me on Instagram.");
+      }
+    };
+    if (!SITE.sheetUrl && !SITE.formKey) return fallback();
+    btn.disabled = true; btn.textContent = "Sending…";
+    // Preferred: Google Sheet + email via Apps Script (see backend/SETUP.md). "no-cors" means we can't read the reply, so success = the request left the browser.
+    if (SITE.sheetUrl) {
+      try {
+        await fetch(SITE.sheetUrl, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ name: f.get("name"), contact: f.get("contact"), service: f.get("service"), pkg: f.get("pkg"), msg: f.get("msg"), website: f.get("website") }) });
+        done("Request sent! I'll reply soon, usually within a day. You can also DM me on Instagram.");
+      } catch (_) { fallback(); }
+      finally { btn.disabled = false; btn.textContent = "Send request →"; }
+      return;
     }
-    $("#qform").style.display = "none"; $("#qok").style.display = "block"; e.target.reset(); fillPkgs();
+    try {
+      const r = await fetch("https://api.web3forms.com/submit", {
+        method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ access_key: SITE.formKey, subject: "New project request: " + f.get("service"), from_name: SITE.brand, name: f.get("name"), message: body })
+      });
+      const j = await r.json();
+      if (!j.success) throw new Error(j.message);
+      done("Request sent! I'll reply soon, usually within a day. You can also DM me on Instagram.");
+    } catch (_) { fallback(); }
+    finally { btn.disabled = false; btn.textContent = "Send request →"; }
   });
 
   /* ---------- lightbox ---------- */
@@ -172,7 +199,7 @@
   /* ---------- home page ---------- */
   if (home) {
     $("#svcGrid").innerHTML = Object.entries(SERVICES).map(([k, s]) => `
-      <a class="card rv" href="service.html?s=${k}">
+      <a class="card rv" href="${k}.html">
         ${s.badge ? `<span class="tag">${esc(s.badge)}</span>` : ""}
         <div class="icon">${s.icon}</div><h3>${esc(s.name)}</h3><p>${esc(s.short)}</p>
         <ul>${s.features.slice(0, 3).map(f => `<li>${esc(f)}</li>`).join("")}</ul>
@@ -187,7 +214,7 @@
 
   /* ---------- service page ---------- */
   if (document.body.dataset.page === "service") {
-    const key = new URLSearchParams(location.search).get("s");
+    const key = document.body.dataset.svc || new URLSearchParams(location.search).get("s");
     const s = SERVICES[key];
     if (!s) { location.replace("index.html"); return; }
     document.title = `${s.name} — ${SITE.brand}`;
@@ -224,9 +251,17 @@
       </div></section>
       <section><div class="wrap">
         <div class="eyebrow">Also offering</div><h2 style="font-size:1.6rem">Explore other services</h2>
-        <div class="others">${Object.entries(SERVICES).filter(([k]) => k !== key).map(([k, o]) => `<a href="service.html?s=${k}">${o.icon} ${esc(o.name)}</a>`).join("")}</div>
+        <div class="others">${Object.entries(SERVICES).filter(([k]) => k !== key).map(([k, o]) => `<a href="${k}.html">${o.icon} ${esc(o.name)}</a>`).join("")}</div>
       </div></section>`;
     gallery($("#gal"), s.projects, ["Sample 1", "Sample 2", "Sample 3", "Sample 4"]);
+  }
+
+  const igb = $("#igBtn"); if (igb) igb.href = IG_DM;
+
+  /* ---------- analytics (Vercel Web Analytics, live site only) ---------- */
+  if (!/^(localhost|127\.|\[::1\])/.test(location.hostname)) {
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    const s = document.createElement("script"); s.defer = true; s.src = "/_vercel/insights/script.js"; document.head.appendChild(s);
   }
 
   /* ---------- scroll reveal ---------- */

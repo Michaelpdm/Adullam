@@ -361,3 +361,7 @@ a,button,summary{-webkit-tap-highlight-color:transparent}
   .card:hover,.work:hover{transform:none}
   .btn.primary:hover{transform:none}
 }
+
+/* ================= SPEED ================= */
+/* skip rendering work for sections far below the screen */
+#process,#work,#faq,#contact{content-visibility:auto;contain-intrinsic-size:auto 600px}

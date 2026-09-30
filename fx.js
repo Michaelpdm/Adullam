@@ -17,7 +17,9 @@
     const n = Math.min(touch ? 35 : 90, Math.floor(W * H / (touch ? 22000 : 16000)));
     pts = Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35, r: Math.random() * 1.6 + .4 }));
   }
+  let raf;
   function draw() {
+    cancelAnimationFrame(raf);
     cx.clearRect(0, 0, W, H);
     for (const p of pts) {
       p.x += p.vx; p.y += p.vy;
@@ -31,9 +33,10 @@
       const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
       if (d < 130) { cx.strokeStyle = `rgba(139,92,246,${(1 - d / 130) * .3})`; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(pts[i].x, pts[i].y); cx.lineTo(pts[j].x, pts[j].y); cx.stroke(); }
     }
-    if (!reduce) requestAnimationFrame(draw);
+    if (!reduce && !document.hidden) raf = requestAnimationFrame(draw);
   }
   size(); draw(); addEventListener("resize", size);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) draw(); });
 
   /* cursor glow (smoothly follows the mouse) */
   const glow = $("#glow"); let gx = innerWidth / 2, gy = innerHeight / 3, tx = gx, ty = gy;
