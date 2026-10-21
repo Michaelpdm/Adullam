@@ -10,7 +10,8 @@ const SITE = {
   sheetUrl: "https://script.google.com/macros/s/AKfycbzpsPc1R8Qn5MHqTlsOoX5FxRTz4wyxSaBZMRegY4_imd64qNivI4by7in94wHlrCc6_g/exec",                   // Google Apps Script web-app URL (see backend/SETUP.md): saves every request to your Google Sheet + emails you
   formKey: "",                 // free key from web3forms.com (enter your email there); makes the quote form email you directly
   url: "",                        // your live site address, e.g. "https://adullam-services.vercel.app" (used for link previews)
-  tagline: "AI-powered content & software that actually converts"
+  tagline: "AI-powered content & software that actually converts",
+  heroScene: "https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"  // Spline scene for the 3D hero; paste your own export URL here to swap it
 };
 
 // Each project: { title, type: "video" | "image", src: "media/file.mp4", poster: "media/thumb.jpg" (optional), note: "short caption" }

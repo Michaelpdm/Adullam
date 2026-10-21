@@ -30,39 +30,30 @@
 <body data-page="home">
 <nav id="nav"></nav>
 
-<header class="hero" id="top">
-  <div class="wrap hero-grid">
-    <div class="hero-copy">
-      <span class="pill"><b>●</b> Now booking new projects</span>
-      <h1>AI-powered <span class="grad" id="rot">UGC videos</span> that actually convert</h1>
-      <p class="lead" id="heroTag"></p>
-      <div class="cta">
-        <a class="btn primary" href="#" data-quote>Start a project →</a>
-        <a class="btn ghost" href="#services">See services</a>
-        <a class="btn ghost" href="#work">View work</a>
+<header class="rhero-wrap" id="top">
+  <div class="wrap">
+    <section class="rhero" id="robotHero" aria-label="Introduction">
+      <svg class="rh-spot" viewBox="0 0 900 700" aria-hidden="true" focusable="false">
+        <defs><radialGradient id="rhSpot" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+        <ellipse cx="260" cy="150" rx="420" ry="260" fill="url(#rhSpot)" transform="rotate(-25 260 150)"/>
+      </svg>
+      <div class="rh-copy">
+        <h1>Content &amp; software that converts.</h1>
+        <p class="rh-lead" id="heroTag"></p>
+        <div class="rh-cta">
+          <a class="rh-btn" href="#" data-quote>Start a project</a>
+          <a class="rh-link" href="#services">See services &rarr;</a>
+        </div>
       </div>
-      <div class="stats">
-        <div><strong class="grad"><span data-count="48">0</span>h</strong><span>typical turnaround</span></div>
-        <div><strong class="grad"><span data-count="100">0</span>+</strong><span>projects delivered</span></div>
-        <div><strong class="grad"><span data-count="5">0</span>★</strong><span>client rating</span></div>
+      <div class="rh-scene" id="rhScene">
+        <div class="rh-glow" aria-hidden="true"></div>
+        <div class="rh-fallback" id="rhFallback" aria-hidden="true">
+          <img src="hero-robot.svg" alt="" width="520" height="520" decoding="async">
+          <span class="rh-spin"></span>
+        </div>
       </div>
-    </div>
-    <div class="scene" aria-hidden="true">
-      <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
-      <div class="stage" id="stage">
-        <div class="ring r1"></div><div class="ring r2"></div>
-        <div class="cube"><div class="cube-in">
-          <div class="face f1">🎬<small>UGC</small></div>
-          <div class="face f2">✨<small>Video</small></div>
-          <div class="face f3">🌐<small>Web</small></div>
-          <div class="face f4">📱<small>Apps</small></div>
-          <div class="face f5">🤖<small>AI</small></div>
-          <div class="face f6">⚙️<small>Auto</small></div>
-        </div></div>
-      </div>
-    </div>
+    </section>
   </div>
-  <div class="scroll-hint">Scroll</div>
 </header>
 
 <div class="marquee" aria-hidden="true"><div class="mq-track" id="mq"></div></div>
@@ -128,5 +119,6 @@
 <script defer src="data.js"></script>
 <script defer src="app.js"></script>
 <script defer src="fx.js"></script>
+<script defer src="hero3d.js"></script>
 </body>
 </html>
