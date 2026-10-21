@@ -457,7 +457,7 @@ footer{overflow:hidden}
 
 /* ================= 3D ROBOT HERO ================= */
 .rhero-wrap{padding:28px 0 40px}
-.rhero{position:relative;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;height:min(600px,90vh);min-height:460px;
+.rhero{position:relative;padding:0;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;height:min(600px,90vh);min-height:460px;grid-template-rows:minmax(0,1fr);
   background:#050505;border:1px solid rgba(255,255,255,.1);border-radius:24px;overflow:hidden;isolation:isolate}
 .rh-spot{position:absolute;top:-10%;left:-10%;width:90%;height:auto;z-index:0;pointer-events:none;opacity:0;transform:translate(-8%,-6%);
   animation:rhSpot 1.8s cubic-bezier(.2,.7,.2,1) .15s forwards}
@@ -478,7 +478,7 @@ footer{overflow:hidden}
 .rh-fallback{position:absolute;inset:0;display:grid;place-items:center;transition:opacity .6s;pointer-events:none}
 .rh-fallback img{width:min(78%,420px);height:auto;opacity:.9}
 .rh-scene.ready .rh-fallback{opacity:0}
-.rh-spin{position:absolute;right:18px;bottom:18px;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.18);border-top-color:#fff;animation:rhSpin .8s linear infinite}
+.rh-spin{position:absolute;left:50%;bottom:22px;margin-left:-11px;width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.18);border-top-color:#fff;animation:rhSpin .8s linear infinite}
 .rh-scene.static .rh-spin,.rh-scene.ready .rh-spin{display:none}
 @keyframes rhSpin{to{transform:rotate(360deg)}}
 @media(max-width:1023px){.rh-copy{padding:clamp(24px,4vw,40px)}.rh-copy h1{font-size:clamp(2rem,4.6vw,2.8rem)}}
@@ -488,3 +488,13 @@ footer{overflow:hidden}
   .rh-scene spline-viewer{pointer-events:none}   /* let the page scroll past the canvas on touch */
 }
 @media(prefers-reduced-motion:reduce){.rh-spot{animation:none;opacity:1;transform:none}.rh-spin{animation:none}}
+
+/* chest-up framing: the scene is full-body, so zoom the canvas into the head and torso */
+.rh-scene{overflow:hidden}
+.rh-scene spline-viewer{transform:scale(1.35);transform-origin:50% 30%}
+@media(max-width:767px){.rh-scene spline-viewer{transform:scale(1.5);transform-origin:50% 22%}}
+
+.rh-fallback::after{content:"Loading 3D…";position:absolute;left:50%;bottom:52px;transform:translateX(-50%);font:500 .72rem var(--mono,monospace);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.rh-scene.static .rh-fallback::after,.rh-scene.ready .rh-fallback::after{display:none}
+.rh-scene{-webkit-mask-image:linear-gradient(to right,transparent,#000 22%);mask-image:linear-gradient(to right,transparent,#000 22%)}
+@media(max-width:767px){.rh-scene{-webkit-mask-image:none;mask-image:none}}

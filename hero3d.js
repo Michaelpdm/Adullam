@@ -27,7 +27,7 @@
     setTimeout(() => { if (!scene.classList.contains("ready")) scene.classList.add("static"); }, 15000);
   }
   if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); (window.requestIdleCallback || setTimeout)(start); } }, { rootMargin: "200px" });
+    const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); start(); } }, { rootMargin: "200px" });
     io.observe(scene);
   } else start();
 })();
