@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import ExportDialog from '../components/ExportDialog'
 import { useApp } from '../store'
 import { useProject } from '../project'
 import Player from '../components/Player'
@@ -33,6 +34,7 @@ export default function Workspace({ title }: { title: string }) {
   const go = useApp((s) => s.go)
   const appFile = useApp((s) => s.file)
   const p = useProject()
+  const [exporting, setExporting] = useState(false)
 
   // A video dropped on the page (App.tsx) is picked up here.
   useEffect(() => {
@@ -70,6 +72,7 @@ export default function Workspace({ title }: { title: string }) {
           </div>
         </div>
         <button onClick={open} className="btn ml-auto" title="Open a different video">📁 Open another</button>
+        <button onClick={() => setExporting(true)} disabled={!p.meta} className="btn btn-primary px-5" title="Save your edited video">⬇️ Export</button>
       </header>
 
       {p.stage === 'error' && <p className="text-red-400">Couldn’t read this video: {p.error}</p>}
@@ -88,6 +91,7 @@ export default function Workspace({ title }: { title: string }) {
           </section>
         </>
       )}
+      {exporting && <ExportDialog onClose={() => setExporting(false)} />}
     </main>
   )
 }

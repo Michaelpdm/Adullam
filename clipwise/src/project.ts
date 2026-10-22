@@ -1,7 +1,9 @@
 import { create } from 'zustand'
+import { useEdit } from './edit'
 import MediaWorker from './workers/media.worker?worker'
 import {
   PROXY_SHORT_SIDE,
+  type ExportPreset,
   WAVE_BUCKETS_PER_SECOND,
   type MediaMeta,
   type WorkerIn,
@@ -84,6 +86,7 @@ export const useProject = create<ProjectState>((set, get) => ({
       if (m.type !== 'probe') return
       const meta = m.meta
       set({ meta, stage: 'ready' })
+      useEdit.getState().reset(meta.duration)
 
       // Thumbnails: about one per 10s, between 20 and 300 in total.
       const count = Math.max(20, Math.min(300, Math.ceil(meta.duration / 10)))
@@ -141,9 +144,62 @@ export const useProject = create<ProjectState>((set, get) => ({
     if (s.originalUrl) URL.revokeObjectURL(s.originalUrl)
     if (s.proxyUrl) URL.revokeObjectURL(s.proxyUrl)
     s.thumbs.forEach((t) => URL.revokeObjectURL(t.url))
+    useEdit.getState().reset(0)
     set({
       file: null, stage: 'idle', error: null, meta: null, originalUrl: null, thumbs: [], thumbProgress: 0,
       peaks: null, peaksVersion: 0, waveProgress: 0, proxy: 'none', proxyProgress: 0, proxyUrl: null,
     })
   },
+}))
+
+// ---- Export -----------------------------------------------------------------
+
+interface ExportState {
+  stage: 'idle' | 'running' | 'done' | 'error'
+  progress: number
+  error: string | null
+  fileName: string | null
+  jobId: number | null
+  start: (preset: ExportPreset) => Promise<void>
+  cancel: () => void
+  reset: () => void
+}
+
+export const useExport = create<ExportState>((set, get) => ({
+  stage: 'idle',
+  progress: 0,
+  error: null,
+  fileName: null,
+  jobId: null,
+
+  async start(preset) {
+    const { file, meta } = useProject.getState()
+    if (!file || !meta) return
+    let handle: FileSystemFileHandle
+    try {
+      // Pick the destination first: the video is written straight to disk while rendering.
+      handle = await (window as any).showSaveFilePicker({
+        suggestedName: file.name.replace(/\.[^.]+$/, '') + ' (edited).mp4',
+        types: [{ description: 'MP4 video', accept: { 'video/mp4': ['.mp4'] } }],
+      })
+    } catch {
+      return // cancelled
+    }
+    const clips = useEdit.getState().clips.map((c) => ({ start: c.start, end: c.end }))
+    set({ stage: 'running', progress: 0, error: null, fileName: handle.name })
+    const jobId = startJob({ type: 'export', file, handle, clips, preset, meta }, (m) => {
+      if (m.type === 'progress') set({ progress: m.progress })
+      else if (m.type === 'error') set({ stage: 'error', error: m.message })
+      else if (m.type === 'done' && get().stage === 'running') set({ stage: 'done', progress: 1 })
+    })
+    set({ jobId })
+  },
+
+  cancel() {
+    const { jobId } = get()
+    if (jobId !== null) worker?.postMessage({ type: 'cancel', id: jobId } satisfies WorkerIn)
+    set({ stage: 'idle', progress: 0, jobId: null })
+  },
+
+  reset: () => set({ stage: 'idle', progress: 0, error: null, fileName: null, jobId: null }),
 }))
